@@ -2,6 +2,8 @@
 
 A TypeScript SDK for interacting with the Creem API, providing seamless integration for payment processing, license management, and product operations.
 
+> **Important**: The SDK is not intended for client-side use since it contains your API key. It is ONLY intended for server-side use especially in a serverless environment. In NextJS, you can use the SDK in server components and API routes (where 'use client' is not set). This is demonstrated in the example app where the SDK is used in the checkout completion page and other server-side locations.
+
 ## Note
 
 This is a demonstration project for a [creem](https://creem.io) payment SDK. This example application is a monorepo built with [turbo](https://turbo.build/repo/docs/guides/monorepos/introduction), [supabase](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs), and [next.js](https://nextjs.org/docs/getting-started). If you have any questions, please reach out to to me at [jannunziato@caltho.com](mailto:jannunziato@caltho.com).
