@@ -7,7 +7,8 @@
     "CREEM_API_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "CREEM_WEBHOOK_SECRET"
   ],
   "tasks": {
     "build": {
@@ -18,7 +19,8 @@
         "CREEM_API_KEY",
         "SUPABASE_SERVICE_ROLE_KEY",
         "NEXT_PUBLIC_SUPABASE_URL",
-        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "CREEM_WEBHOOK_SECRET"
       ]
     },
     "lint": {
@@ -33,7 +35,8 @@
         "CREEM_API_KEY",
         "SUPABASE_SERVICE_ROLE_KEY",
         "NEXT_PUBLIC_SUPABASE_URL",
-        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "CREEM_WEBHOOK_SECRET"
       ],
       "cache": false,
       "persistent": true

@@ -10,7 +10,7 @@ const pricingPlans = [
     title: "Basic",
     price: 5,
     description: "Get started with core features",
-    productId: "[some_id]", // keeping original ID
+    productId: "prod_1234567890", // replace with actual product ID
     features: [
       "1 user account",
       "Basic features",
@@ -22,7 +22,7 @@ const pricingPlans = [
     title: "Plus",
     price: 12,
     description: "Perfect for growing needs",
-    productId: "prod_yc4gKln1Ki43eyL6rzOTf", // keeping original ID
+    productId: "prod_1234567890", // replace with actual product ID
     isPopular: true,
     features: [
       "5 user accounts",
@@ -36,7 +36,7 @@ const pricingPlans = [
     title: "Premium",
     price: 29,
     description: "For teams and businesses",
-    productId: "[some_id_2]", // keeping original ID
+    productId: "prod_1234567890", // replace with actual product ID
     features: [
       "Unlimited users",
       "All features included",
