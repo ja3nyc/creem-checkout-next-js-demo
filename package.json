@@ -2,15 +2,18 @@
   "name": "creem-checkout-next-js-demo",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "build": "dotenv -- turbo build",
+    "dev": "dotenv -- turbo dev",
+    "lint": "dotenv -- turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "ngrok": "ngrok http https://localhost:3000",
+    "types": "supabase gen types --lang=typescript --local > ./packages/db/src/supabase.types.ts"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
     "turbo": "^2.3.3",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "dotenv": "^16.4.5"
   },
   "engines": {
     "node": ">=18"

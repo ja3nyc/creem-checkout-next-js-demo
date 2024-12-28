@@ -1,6 +1,51 @@
+import { createClient } from "@repo/db/server";
+import { Button } from "@repo/ui/components/button";
 import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
+import Link from "next/link";
+import { PricingCard } from "./component/pricing-card";
 import styles from "./page.module.css";
+
+const pricingPlans = [
+  {
+    title: "Basic",
+    price: 5,
+    description: "Get started with core features",
+    productId: "[some_id]", // keeping original ID
+    features: [
+      "1 user account",
+      "Basic features",
+      "Email support",
+      "2GB storage"
+    ]
+  },
+  {
+    title: "Plus",
+    price: 12,
+    description: "Perfect for growing needs",
+    productId: "prod_yc4gKln1Ki43eyL6rzOTf", // keeping original ID
+    isPopular: true,
+    features: [
+      "5 user accounts",
+      "Advanced features",
+      "Priority support",
+      "15GB storage",
+      "Analytics dashboard"
+    ]
+  },
+  {
+    title: "Premium",
+    price: 29,
+    description: "For teams and businesses",
+    productId: "[some_id_2]", // keeping original ID
+    features: [
+      "Unlimited users",
+      "All features included",
+      "24/7 phone support",
+      "100GB storage",
+      "Custom branding"
+    ]
+  }
+];
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -18,7 +63,10 @@ const ThemeImage = (props: Props) => {
   );
 };
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -31,6 +79,28 @@ export default function Home() {
           height={38}
           priority
         />
+        {user ? (
+          <p className="text-lg">Welcome back, {user.email}</p>
+        ) : (
+          <Link href="/login">
+            <Button className="bg-primary w-full mx-auto text-primary-foreground hover:bg-primary/90">
+              Login
+            </Button>
+          </Link>
+        )}
+        <section id="pricing" className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+            <div className="flex flex-wrap justify-center gap-8">
+              {pricingPlans.map((plan) => (
+                <PricingCard
+                  key={plan.productId}
+                  {...plan}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
         <ol>
           <li>
             Get started by editing <code>apps/web/app/page.tsx</code>
@@ -63,9 +133,6 @@ export default function Home() {
             Read our docs
           </a>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
       </main>
       <footer className={styles.footer}>
         <a

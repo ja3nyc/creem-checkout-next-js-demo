@@ -1,0 +1,26 @@
+{
+    "name": "@repo/supabase",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "clean": "rm -rf .turbo node_modules",
+      "lint": "biome check .",
+      "format": "biome format --write .",
+      "typecheck": "tsc --noEmit",
+      "db:generate": "supabase gen types --lang=typescript --project-id $PROJECT_ID --schema public > src/types/db.ts"
+    },
+    "dependencies": {
+      "@supabase/postgrest-js": "^1.17.3",
+      "@supabase/ssr": "^0.5.1",
+      "supabase": "^1.219.2"
+    },
+    "devDependencies": {
+      "@supabase/supabase-js": "^2.46.1"
+    },
+    "exports": {
+      "./server": "./src/server.ts",
+      "./client": "./src/client.ts",
+      "./middleware": "./src/middleware.ts",
+      "./admin": "./src/admin.ts"
+    }
+  }
