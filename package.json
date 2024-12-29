@@ -6,7 +6,7 @@
     "dev": "dotenv -- turbo dev",
     "lint": "dotenv -- turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "ngrok": "ngrok http https://localhost:3000",
+    "ngrok": "ngrok http https://localhost:3000 --url only-divine-donkey.ngrok-free.app",
     "types": "supabase gen types --lang=typescript --local > ./packages/db/src/supabase.types.ts"
   },
   "devDependencies": {
