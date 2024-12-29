@@ -1,7 +1,7 @@
 create table public.subscriptions (
   id uuid primary key default uuid_generate_v4(),
   user_id uuid references auth.users(id) not null,
-  subscription_id text not null,
+  subscription_id text not null unique,
   customer_id text not null,
   product_id text not null,
   status text not null,
@@ -45,3 +45,7 @@ execute function update_updated_at();
 -- Create index for faster lookups
 create index idx_subscriptions_user_id on public.subscriptions(user_id);
 create index idx_subscriptions_status on public.subscriptions(status); 
+
+-- Add unique constraint to subscription_id
+alter table public.subscriptions
+add constraint unique_subscription_id unique (subscription_id);

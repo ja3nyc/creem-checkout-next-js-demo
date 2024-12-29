@@ -1,67 +1,93 @@
+import { env } from '@/env.mjs';
 import { creem } from '@/lib/creem';
+import { createWebhookHandler } from '@creem/sdk/webhook-handler';
 import { createAdminClient } from '@repo/db/admin';
-import { createClient } from '@repo/db/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
-    const signature = req.headers.get('creem-signature');
-    console.log(signature);
-    if (!signature) {
-        return NextResponse.json({ message: 'No signature found' }, { status: 400 });
-    }
-    const payload = await req.text();
-    const isValid = creem.verifyWebhookSignature(
-        payload,
-        signature,
-        process.env.CREEM_WEBHOOK_SECRET!
-    );
-    if (!isValid) {
-        return NextResponse.json({ message: 'Invalid signature' }, { status: 400 });
-    }
-
-    const event = JSON.parse(payload);
-    const supabase = await createAdminClient();
-    const supabaseClient = await createClient();
-
-    const authUser = await supabaseClient.auth.getUser();
-
-    try {
-        switch (event.eventType) {
-            case 'checkout.completed': {
-                const { customer_id, subscription_id, product_id } = event.object.subscription;
-                await supabase
-                    .from('subscriptions')
-                    .upsert({
-                        customer_id,    
-                        id: subscription_id,
-                        subscription_id,
-                        product_id,
-                        status: 'active',
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                        user_id: customer_id
-                    });
-                break;
-            }
-
-            case 'subscription.canceled': {
-                const { customer_id, subscription_id } = event.object;
-                await supabase
-                    .from('subscriptions')
-                    .update({
-                        status: 'canceled',
-                        canceled_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('subscription_id', subscription_id)
-                    .eq('customer_id', customer_id);
-                break;
-            }
+const webhookHandler = createWebhookHandler(creem, env.CREEM_WEBHOOK_SECRET, {
+    'checkout.completed': async (event) => {
+        console.log('Received checkout.completed webhook event:', event);
+        const checkout = event.object;
+        if (!checkout) {
+            console.error('No checkout object found in event');
+            return;
         }
 
-        return NextResponse.json({ received: true });
+        console.log('Processing checkout for customer:', checkout.customer.id);
+        const supabase = await createAdminClient();
+        
+        const { error } = await supabase
+            .from('subscriptions')
+            .upsert(
+                {
+                    customer_id: checkout.customer.id,
+                    subscription_id: checkout.subscription?.id || '',
+                    product_id: checkout.product.id,
+                    status: 'active',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    user_id: checkout.request_id as string
+                },
+                {
+                    onConflict: checkout.subscription?.id ? 'subscription_id' : 'user_id',
+                    ignoreDuplicates: false
+                }
+            );
+            
+        if (error) {
+            console.error('Error upserting subscription:', error);
+            if (error.code === '23505') {
+                console.error('Duplicate subscription_id detected');
+            }
+        } else {
+            console.log('Successfully processed checkout.completed for checkout:', checkout.id);
+        }
+    },
+
+    'subscription.canceled': async (event) => {
+        console.log('Received subscription.canceled webhook event:', event);
+        const { id: subscription_id, customer, metadata } = event.object;
+
+
+        console.log('Processing cancellation for subscription:', subscription_id);
+        const supabase = await createAdminClient();
+        const { error } = await supabase
+            .from('subscriptions')
+            .update({
+                status: 'canceled',
+                canceled_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('subscription_id', subscription_id)
+
+        if (error) {
+            console.error('Error updating subscription:', error);
+        } else {
+            console.log('Successfully processed cancellation for subscription:', subscription_id);
+        }
+    }
+});
+
+export async function POST(req: NextRequest) {
+    console.log('Received webhook request');
+    const request = {
+        method: req.method,
+        headers: Object.fromEntries(req.headers),
+        body: await req.json()
+    };
+
+    try {
+        const response = await webhookHandler(request as any, {
+            json: (data: any, init?: { status?: number }) => 
+                NextResponse.json(data, { status: init?.status || 200 })
+        } as any);
+        console.log('Successfully processed webhook request');
+        return response;
     } catch (error) {
-        console.error('Webhook handler error:', error);
-        return NextResponse.json({ message: 'Webhook handler failed' }, { status: 500 });
+        console.error('Error processing webhook:', error);
+        return NextResponse.json(
+            { message: 'Internal server error' },
+            { status: 500 }
+        );
     }
 } 

@@ -1,10 +1,10 @@
 import { creem } from '@/lib/creem';
-import { createClient } from '@caltho/db/server';
+import { createClient } from '@repo/db/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
     try {
-        const supabase = createClient();
+        const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         const session = await creem.createCheckoutSession({
             product_id: productId,
             success_url: successUrl,
-            request_id: user.id, // Using user ID as request ID for tracking
+            request_id: user.id, // Using user ID as request ID for trackin
         });
 
         return NextResponse.json(session);

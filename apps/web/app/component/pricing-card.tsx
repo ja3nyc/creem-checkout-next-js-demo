@@ -3,6 +3,7 @@
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PricingCardProps {
     title: string;
@@ -22,10 +23,11 @@ export function PricingCard({
     productId,
     isPopular
 }: PricingCardProps) {
+    const router = useRouter();
     function handleSubscribe() {
         const successUrl = encodeURIComponent(`${window.location.origin}/checkout/complete`);
         // The API will handle all redirects (login, checkout, etc.)
-        window.location.href = `/api/subscribe/${productId}?successUrl=${successUrl}`;
+        router.push(`/api/subscribe/${productId}?successUrl=${successUrl}`);
     }
 
     return (

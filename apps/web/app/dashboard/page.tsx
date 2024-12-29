@@ -32,6 +32,10 @@ export default async function DashboardPage() {
             cancelAtPeriodEnd: subscription.canceled_at
         } : null;
 
+        const customerPortal = await sdk.createBillingPortalSession({
+            customer_id: subscription?.customer.id || ''
+        });
+
         return (
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
@@ -66,6 +70,12 @@ export default async function DashboardPage() {
                                     {formattedSubscription.cancelAtPeriodEnd ? "Yes" : "No"}
                                 </span>
                             </div>
+                            <a
+                                href={customerPortal.customer_portal_link}
+                                className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                            >
+                                Manage Subscription
+                            </a>
                         </div>
                     ) : (
                         <div className="text-center py-4">
@@ -76,6 +86,7 @@ export default async function DashboardPage() {
                             >
                                 View Plans
                             </a>
+
                         </div>
                     )}
                 </div>
