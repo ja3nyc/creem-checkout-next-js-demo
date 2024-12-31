@@ -256,7 +256,7 @@ export class CreemSDK {
      * const product = await creemSDK.getProduct('prod_123');
      */
     async getProduct(productId: string): Promise<Product> {
-        return this.request<Product>(`/v1/products/${productId}`);
+        return this.request<Product>(`/v1/products?product_id=${encodeURIComponent(productId)}`);
     }
 
     /**
